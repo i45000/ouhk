@@ -1,0 +1,20 @@
+ <html>
+     <body>
+       <h2>Edit Restaurant Detail</h2>  
+
+      <form action='update' method='GET'>
+       <input type='hidden' name='_id' value="<%= restaurants._id %>">
+       <p>Name:<input type='text' name='name' id='name' value="<%= restaurants.name %>" required></p>
+       <p>Cuisine:<input type='text' name='cuisine' id='cuisine' value="<%= restaurants.cuisine %>" required></p>
+       <p>Borough:<input type='text' name='borough' id='borough' value="<%= restaurants.borough%>" required></p>
+       <p>Street:<input type='text' name='street' id='street' value="<%= restaurants.address.street %>" required></p>
+       <p>Building:<input type='text' name='building' id='building' value="<%= restaurants.address.building %>" required></p>
+       <p>Zipcode:<input type='text' name='zipcode' id='zipcode' value="<%= restaurants.address.zipcode %>"required></p>
+       <p>GPS Coordinates(lon.):<input type='number' name='lon' id='lon' value="<%= restaurants.address.coord[0] %>"required></p> 
+       <p>GPS Coordinates(lat.):<input type='number' name='lat' id='lat' value="<%= restaurants.address.coord[1] %>"required></p>
+       <p>Photo:<input type='file' name='photo'></p>
+       <input type='submit' value='submit'>
+       </form>       
+       <a href="/">home</a>
+    </body>
+  </html>

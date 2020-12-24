@@ -1,0 +1,37 @@
+<html>
+     <body> 
+       <h2>Restaurant Detail</h2>
+       <input type='hidden' name='_id' value="<%= restaurants._id %>">
+       <% if(restaurants.photo){ %>
+         <img src="data:image/jpg;base64,<%= restaurants.photo %>"><br>
+       <% } %>
+       <p>Name:<%= restaurants.name %></p>
+       <p>Cuisine:<%= restaurants.cuisine %></p>
+       <p>Borough:<%= restaurants.borough%></p>
+       <p>Street:<%= restaurants.address.street %></p>
+       <p>Building:<%= restaurants.address.building %></p>
+       <p>Zipcode:<%= restaurants.address.zipcode %></p>
+       <p>GPS Coordinates(lon.):<%= restaurants.address.coord[0] %></p> 
+       <p>GPS Coordinates(lat.):<%= restaurants.address.coord[1] %></p>
+       <p>Create by:<%= restaurants.owner %></p>
+       
+       <% for (var g of restaurants.grades){%>
+         <ul>
+	 <li>user:<%= g.user %></a></li>
+         <li>score:<%= g.score %></a></li>
+         </ul>
+	 <% } %>
+       <% if(isOwner){ %>
+       <a href="edit?_id=<%= restaurants._id %>">edit</a><br>
+       <a href="delete?_id=<%= restaurants._id %>">delete</a><br>
+       <% } %>
+       <% if(!isRated){ %>
+       <a href="rate?_id=<%= restaurants._id %>">rate</a><br>
+       <% } else { %>
+       <p>You have been rated </p>
+       <% } %>
+      <a href="/"> home </a>
+      </body>
+      </html>
+
+
