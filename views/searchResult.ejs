@@ -1,6 +1,6 @@
 <html>
 <body>
-   <h2>Search Result</h2>
+   <h2>Search Result by Keywords " <%= keywords %> "</h2>
    <h2>There are <%= nRestaurants %> Restaurant(s)</h2>
 
    <ul>
@@ -8,7 +8,7 @@
 	 <li>Restaurant Name:<a href="/details?_id=<%= r._id %>"><%= r.name %></a></li>
 	 <% } %>
 	 </ul>
-      <a href="home">home</a>
+      <a href="/">home</a>
       <a href="new">new</a>
       <a href="logout">logout</a>
 	 </body>

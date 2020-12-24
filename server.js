@@ -23,8 +23,8 @@ app.set('view engine','ejs');
 app.get('/login', function(req, res) {
     var username = req.query.username;
     var password = req.query.password;
-    console.log(username);
-    if((username=="demo"&& password=="")||(username=="demo2"&& password=="")){
+    console.log(username+" login");
+    if((username=="demo"&& password=="")||(username=="student"&& password=="")){
     req.session.username = username;
     req.session.loggedin = true;
     res.redirect('/display');
@@ -176,20 +176,37 @@ const handle_Search = (req,res, criteria) => {
         assert.equal(null, err);
         console.log("Connected successfully to server");
         const db = client.db(dbName);
-        console.log(req.query);
-        var s = req.query.searchby
-        console.log(s);
-        var k = req.query.keywords
-        var result =  s +':'+ k
-        console.log(result)
-        var criteria={result};
-       console.log(criteria);
-        findDocument(db, criteria, (docs) => {
-            client.close();
-            console.log("Closed DB connection");
-            res.status(200).render('searchResult',{nRestaurants:docs.length,restaurants:docs,username:req.session.username});
-        });
-    });
+        var keywords=req.query.keywords;
+        var searchby=req.query.searchby; 
+        if(searchby=='name'){
+        db.collection('restaurants', function(err, collection) {
+            collection.find({ 'name' : new RegExp(keywords, 'i') }).toArray(function(err, docs) {
+        res.status(200).render('searchResult',      {keywords:req.query.keywords,nRestaurants:docs.length,restaurants:docs,username:req.session.username});
+       });
+
+       });
+      } else if(searchby=='borough'){
+
+db.collection('restaurants', function(err, collection) {
+            collection.find({ 'borough' : new RegExp(keywords, 'i') }).toArray(function(err, docs) {
+        res.status(200).render('searchResult',      {keywords:req.query.keywords,nRestaurants:docs.length,restaurants:docs,username:req.session.username});
+       });
+
+       });
+}
+        else if(searchby=='cuisine'){
+db.collection('restaurants', function(err, collection) {
+            collection.find({ 'cuisine' : new RegExp(keywords, 'i') }).toArray(function(err, docs) {
+        res.status(200).render('searchResult',      {keywords:req.query.keywords,nRestaurants:docs.length,restaurants:docs,username:req.session.username});
+       });
+
+       });
+
+    }
+      else {
+       res.status(200).render('info',{message:"Please select a search type",backurl:"/"});
+     }
+  });
 }
 const handle_Edit = (res, criteria) => {
     const client = new MongoClient(mongourl);
@@ -357,7 +374,7 @@ app.post('/update',(req,res)=>{
          handle_Update(req,res,req.query);
 });
 app.get('/map',(req,res)=>{
-         res.status(200).render('map',{_id:req.query._id,lon:req.query.lon,lat:req.query.lat,zoom:req.query.zoom? req.query.zoom : 10});
+         res.status(200).render('map',{_id:req.query._id,lon:req.query.lon,lat:req.query.lat,zoom:req.query.zoom? req.query.zoom : 15});
        
 });
 app.get('/delete',(req,res)=>{
