@@ -6,10 +6,20 @@
  ----------------------------------------------------------------- 
 
 
-Hi there! Welcome to AWS Cloud9!
+Hi there! Welcome to OUHK project
 
-To get started, create some files, play with the terminal,
-or visit https://docs.aws.amazon.com/console/cloud9/ for our documentation.
+1.git clone https://github.com/i45000/ouhk
+2.npm install 
+3.npm start
+
+user:student
+password:empty
+user:demo
+password:empty
+
+
+
+visit ec2-107-23-184-38.compute-1.amazonaws.com:8099 for our documentation.
 
 Happy coding!
 # ouhk
