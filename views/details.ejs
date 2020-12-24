@@ -2,8 +2,8 @@
      <body> 
        <h2>Restaurant Detail</h2>
        <input type='hidden' name='_id' value="<%= restaurants._id %>">
-       <% if(restaurants.photo){ %>
-         <img src="data:image/jpg;base64,<%= restaurants.photo %>"><br>
+       <% if(restaurants.photo&& restaurants.photomimetype){ %>
+         <img src="data:image/<%= restaurants.photomimetype %>;base64,<%= restaurants.photo %>"><br>
        <% } %>
        <p>Name:<%= restaurants.name %></p>
        <p>Cuisine:<%= restaurants.cuisine %></p>
@@ -30,6 +30,7 @@
        <% } else { %>
        <p>You have been rated </p>
        <% } %>
+      <a href="map?_id=<%= restaurants._id %>&lon=<%= restaurants.address.coord[0]%>&lat=<%= restaurants.address.coord[1]%>">map</a><br>
       <a href="/"> home </a>
       </body>
       </html>

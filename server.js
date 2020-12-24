@@ -177,9 +177,12 @@ const handle_Search = (req,res, criteria) => {
         console.log("Connected successfully to server");
         const db = client.db(dbName);
         console.log(req.query);
-        var s =req.query.searchby;
+        var s = req.query.searchby
         console.log(s);
-        var criteria="{"+s+":/.*"+req.query.keywords+".*/}";
+        var k = req.query.keywords
+        var result =  s +':'+ k
+        console.log(result)
+        var criteria={result};
        console.log(criteria);
         findDocument(db, criteria, (docs) => {
             client.close();

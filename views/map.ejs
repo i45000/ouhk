@@ -1,25 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJW4jsPlNKgv6jFm3B5Edp5ywgdqLWdmc&callback=initMap" async defer></script>
- 
-<script>
-function initialize()
-{
-    var mapProp = {
-        center:new google.maps.LatLng(51.508742,-0.120850),
-        zoom:5,
-        mapTypeId:google.maps.MapTypeId.ROADMAP
-    };
-    var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
-}
- 
-google.maps.event.addDomListener(window, 'load', initialize);
-</script>
-</head>
- 
-<body>
-<div id="googleMap" style="width:500px;height:380px;"></div>
- 
-</body>
+   <head>
+      <title>Leaflet sample</title>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""/>
+      <!-- Make sure you put this AFTER Leaflet's CSS -->
+      <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin=""></script>
+   </head>
+
+   <body>
+      <div id = "map" style = "width: 900px; height: 580px"></div>
+      <a href="/details?_id=<%= _id %>">back</a>
+      <script>
+         // Creating map options
+         var mapOptions = {
+            center: [<%=lat%>,<%=lon%>],
+            zoom: <%=zoom%>
+         }
+         
+         // Creating a map object
+         var map = new L.map('map', mapOptions);
+         
+         // Creating a Layer object
+         var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+         
+         // Adding layer to the map
+         map.addLayer(layer);
+         // Creating a marker
+         var marker = L.marker([<%=lat%>,<%=lon%>]);
+         // Adding marker to the map
+         marker.addTo(map);
+      </script>
+   </body>
+   
 </html>
