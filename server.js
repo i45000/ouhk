@@ -289,12 +289,13 @@ const form = new formidable.IncomingForm();
         ]
     }
 };
+                var DOCID = {};
+                DOCID['_id'] = ObjectID(fields._id);
     if (files.filetoupload && files.filetoupload.size > 0) { 
        console.log("update photo");
        fs.readFile(files.filetoupload.path, (err,data) => {
                 assert.equal(err,null);
-                var DOCID = {};
-                DOCID['_id'] = ObjectID(fields._id);
+
                 updateDoc['photo'] = new Buffer.from(data).toString('base64');
                 updateDoc['photomimetype'] = files.filetoupload.type;
              updateDocument(DOCID, updateDoc, (results) => {
@@ -339,9 +340,9 @@ const handle_UpdateRate = (req, res, criteria) => {
            console.log(results.modifiedCount);
            console.log("updated one document " + JSON.stringify(updateDoc));
            if (results.modifiedCount == 1) {
-           res.status(200).render('info',{message:"Update Success",backurl:"/details?_id="+criteria._id});
+           res.status(200).render('info',{message:"Rate Success",backurl:"/details?_id="+criteria._id});
               } else {
-           res.status(200).render('info',{message:"Update Fail",backurl:"/details?_id="+criteria._id});
+           res.status(200).render('info',{message:"Rate Fail",backurl:"/details?_id="+criteria._id});
            }
        });
 
