@@ -106,26 +106,33 @@ const deleteDocument = (DOCID, callback) => {
   });
 }
 const handle_Insert = (req,res, criteria) => {
- 
-      const doc = 
-{
-    "name" : req.query.name,
-    "borough" : req.query.borough,
-    "cuisine" : req.query.cuisine,
+
+        const form = new formidable.IncomingForm();
+        form.parse(req, (err, fields, files) => {
+   var doc = 
+    {
+    "name" : fields.name,
+    "borough" : fields.borough,
+    "cuisine" : fields.cuisine,
     "address" : {
-        "street" : req.query.street,
-        "zipcode" : req.query.zipcode,
-        "building" : req.query.building,
+        "street" : fields.street,
+        "zipcode" : fields.zipcode,
+        "building" : fields.building,
         "coord" : [ 
-            req.query.lon, 
-            req.query.lat
+            fields.lon, 
+            fields.lat
         ]
     },
     "grades" : [ 
     ],
     "owner" : req.session.username
 };
-        insertDocument(doc, (results) => {
+    if (files.filetoupload && files.filetoupload.size > 0) { 
+       fs.readFile(files.filetoupload.path, (err,data) => {
+                assert.equal(err,null);
+                doc['photo'] = new Buffer.from(data).toString('base64');
+                doc['photomimetype'] = files.filetoupload.type;
+                insertDocument(doc, (results) => {
          if (results.insertedCount == 1) {
            res.status(200).render('info',{message:"Create Success",backurl:"/details?_id="+doc._id});
               } else {
@@ -133,6 +140,19 @@ const handle_Insert = (req,res, criteria) => {
            }
        });
 
+    });
+
+}
+  else{
+        insertDocument(doc, (results) => {
+         if (results.insertedCount == 1) {
+           res.status(200).render('info',{message:"Create Success",backurl:"/details?_id="+doc._id});
+              } else {
+           res.status(200).render('info',{message:"Create Fail",backurl:"/"});
+           }
+       });
+      }
+ });
   }
         
 const handle_Find = (req,res, criteria) => {
@@ -146,6 +166,25 @@ const handle_Find = (req,res, criteria) => {
             client.close();
             console.log("Closed DB connection");
             res.status(200).render('read',{nRestaurants:docs.length,restaurants:docs,username:req.session.username});
+        });
+    });
+}
+
+const handle_Search = (req,res, criteria) => {
+    const client = new MongoClient(mongourl);
+    client.connect((err) => {
+        assert.equal(null, err);
+        console.log("Connected successfully to server");
+        const db = client.db(dbName);
+        console.log(req.query);
+        var s =req.query.searchby;
+        console.log(s);
+        var criteria="{"+s+":/.*"+req.query.keywords+".*/}";
+       console.log(criteria);
+        findDocument(db, criteria, (docs) => {
+            client.close();
+            console.log("Closed DB connection");
+            res.status(200).render('searchResult',{nRestaurants:docs.length,restaurants:docs,username:req.session.username});
         });
     });
 }
@@ -213,34 +252,54 @@ const handle_Details = (req,res, criteria) => {
 
 const handle_Update = (req, res, criteria) => {
 
-         var updateDoc = 
-     {
-    "name" : req.query.name,
-    "borough" : req.query.borough,
-    "cuisine" : req.query.cuisine,
+const form = new formidable.IncomingForm();
+        form.parse(req, (err, fields, files) => {
+   var updateDoc = 
+    {
+    "name" : fields.name,
+    "borough" : fields.borough,
+    "cuisine" : fields.cuisine,
     "address" : {
-        "street" : req.query.street,
-        "zipcode" : req.query.zipcode,
-        "building" : req.query.building,
+        "street" : fields.street,
+        "zipcode" : fields.zipcode,
+        "building" : fields.building,
         "coord" : [ 
-            req.query.lon, 
-            req.query.lat
+            fields.lon, 
+            fields.lat
         ]
     }
-}         
-           var DOCID = {};
-           DOCID['_id'] = ObjectID(criteria._id);
-           console.log(criteria._id);
-           updateDocument(DOCID, updateDoc, (results) => {
+};
+    if (files.filetoupload && files.filetoupload.size > 0) { 
+       console.log("update photo");
+       fs.readFile(files.filetoupload.path, (err,data) => {
+                assert.equal(err,null);
+                var DOCID = {};
+                DOCID['_id'] = ObjectID(fields._id);
+                updateDoc['photo'] = new Buffer.from(data).toString('base64');
+                updateDoc['photomimetype'] = files.filetoupload.type;
+             updateDocument(DOCID, updateDoc, (results) => {
            console.log("updated one document " + JSON.stringify(updateDoc));
            if (results.modifiedCount == 1) {
-           res.status(200).render('info',{message:"Update Success",backurl:"/details?_id="+criteria._id});
+           res.status(200).render('info',{message:"Update Success",backurl:"/details?_id="+fields._id});
               } else {
-           res.status(200).render('info',{message:"Update Fail",backurl:"/details?_id="+criteria._id});
+           res.status(200).render('info',{message:"Update Fail",backurl:"/details?_id="+fields._id});
+           }
+       });
+   });
+}
+  else{
+       updateDocument(DOCID, updateDoc, (results) => {
+           console.log("updated one document " + JSON.stringify(updateDoc));
+           if (results.modifiedCount == 1) {
+           res.status(200).render('info',{message:"Update Success",backurl:"/details?_id="+fields._id});
+              } else {
+           res.status(200).render('info',{message:"Update Fail",backurl:"/details?_id="+fields._id});
            }
        });
 
-      
+      }
+
+  });
 }
 
 const handle_UpdateRate = (req, res, criteria) => {
@@ -260,9 +319,9 @@ const handle_UpdateRate = (req, res, criteria) => {
            console.log(results.modifiedCount);
            console.log("updated one document " + JSON.stringify(updateDoc));
            if (results.modifiedCount == 1) {
-           res.status(200).render('info',{message:"Update Success",backurl:"/detail?_id="+criteria._id});
+           res.status(200).render('info',{message:"Update Success",backurl:"/details?_id="+criteria._id});
               } else {
-           res.status(200).render('info',{message:"Update Fail",backurl:"/details?_id=r._id"});
+           res.status(200).render('info',{message:"Update Fail",backurl:"/details?_id="+criteria._id});
            }
        });
 
@@ -285,14 +344,18 @@ app.get('/display',(req,res)=>{
 app.get('/details',(req,res)=>{
          handle_Details(req,res,req.query);
 });
-app.get('/insert',(req,res)=>{
+app.post('/insert',(req,res)=>{
          handle_Insert(req,res,req.query);
 });
 app.get('/edit',(req,res)=>{
          handle_Edit(res,req.query);
 });
-app.get('/update',(req,res)=>{
+app.post('/update',(req,res)=>{
          handle_Update(req,res,req.query);
+});
+app.get('/map',(req,res)=>{
+         res.status(200).render('map',{_id:req.query._id,lon:req.query.lon,lat:req.query.lat,zoom:req.query.zoom? req.query.zoom : 10});
+       
 });
 app.get('/delete',(req,res)=>{
          handle_Delete(res,req.query);
@@ -306,4 +369,67 @@ app.get('/rate',(req,res)=>{
 app.get('/handleRate',(req,res)=>{
              handle_UpdateRate(req,res,req.query);
 });
-app.listen(app.listen(process.env.PORT || 8080));
+app.get('/search',(req,res)=>{
+             handle_Search(req,res,req.query);
+});
+app.get('/api/restaurant/name/:name', (req,res) => {
+    if (req.params.name) {
+        let criteria = {};
+        criteria['name'] = req.params.name;
+        const client = new MongoClient(mongourl);
+        client.connect((err) => {
+            assert.equal(null, err);
+            console.log("Connected successfully to server");
+            const db = client.db(dbName);
+
+            findDocument(db, criteria, (docs) => {
+                client.close();
+                console.log("Closed DB connection");
+                res.status(200).json(docs);
+            });
+        });
+    } else {
+        res.status(500).json({"error": "missing name"});
+    }
+})
+app.get('/api/restaurant/borough/:borough', (req,res) => {
+    if (req.params.borough) {
+        let criteria = {};
+        criteria['borough'] = req.params.borough;
+        const client = new MongoClient(mongourl);
+        client.connect((err) => {
+            assert.equal(null, err);
+            console.log("Connected successfully to server");
+            const db = client.db(dbName);
+
+            findDocument(db, criteria, (docs) => {
+                client.close();
+                console.log("Closed DB connection");
+                res.status(200).json(docs);
+            });
+        });
+    } else {
+        res.status(500).json({"error": "missing name"});
+    }
+})
+app.get('/api/restaurant/cuisine/:cuisine', (req,res) => {
+    if (req.params.cuisine) {
+        let criteria = {};
+        criteria['cuisine'] = req.params.cuisine;
+        const client = new MongoClient(mongourl);
+        client.connect((err) => {
+            assert.equal(null, err);
+            console.log("Connected successfully to server");
+            const db = client.db(dbName);
+
+            findDocument(db, criteria, (docs) => {
+                client.close();
+                console.log("Closed DB connection");
+                res.status(200).json(docs);
+            });
+        });
+    } else {
+        res.status(500).json({"error": "missing name"});
+    }
+})
+app.listen(app.listen(process.env.PORT || 8099));
