@@ -9,7 +9,9 @@
 Hi there! Welcome to OUHK project
 
 1.git clone https://github.com/i45000/ouhk
+
 2.npm install 
+
 3.npm start
 
 user:student
