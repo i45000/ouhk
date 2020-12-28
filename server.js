@@ -453,4 +453,4 @@ app.get('/api/restaurant/cuisine/:cuisine', (req,res) => {
         res.status(500).json({"error": "missing name"});
     }
 })
-app.listen(app.listen(process.env.PORT || 8099));
+app.listen(app.listen(process.env.PORT || 8080));
