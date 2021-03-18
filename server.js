@@ -11,7 +11,7 @@ const assert = require('assert');
 const http = require('http');
 const url = require('url');
 
-const mongourl = 'mongodb+srv://kahowongDB:35282539@cluster0.upead.mongodb.net/test?retryWrites=true&w=majority';
+const mongourl = '+srv://ka282539@cluster0.upead.mongodb.net/test?retryWrites=true&w=majority';
 const dbName='test';
 
 app.use(session({
